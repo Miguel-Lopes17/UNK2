@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca CVC Style</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 16px;
+        }
+        
+        /* Campo de busca compacto (estado inicial) */
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .compact-search {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 25px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .search-icon {
+            color: #ff6b00;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: transparent;
+            padding: 5px 0;
+        }
+        
+        /* Painel expandido (aparece ao digitar) */
+        .expanded-panel {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab-button {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: none;
+            border: none;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .tab-button.active {
+            color: #ff6b00;
+            font-weight: bold;
+        }
+        
+        .tab-button.active:after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ff6b00;
+        }
+        
+        .trip-type {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        
+        .trip-option {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            background: none;
+            border: none;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .trip-option.active {
+            background: white;
+            color: #ff6b00;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-weight: bold;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        
+        .search-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ff6b00;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .suggestions {
+            display: none;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-top: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .suggestion-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+        }
+        
+        .suggestion-item:hover {
+            background: #f9f9f9;
+        }
+        
+        .initial-suggestions {
+            margin-top: 10px;
+        }
+        
+        .initial-suggestion {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .initial-suggestion i {
+            margin-right: 10px;
+            color: #ff6b00;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="search-container">
+        <!-- Campo compacto (agora editável) -->
+        <div class="compact-search">
+            <span class="material-icons search-icon">search</span>
+            <input type="text" class="search-input" placeholder="Para onde você quer viajar?" id="mainSearch" onkeyup="handleMainSearch()">
+        </div>
+        
+        <!-- Painel expandido (aparece ao digitar) -->
+        <div class="expanded-panel" id="expandedPanel">
+            <!-- Sugestões iniciais -->
+            <div class="initial-suggestions" id="initialSuggestions">
+                <div class="initial-suggestion" onclick="selectSuggestion('Passagens aéreas')">
+                    <i class="material-icons">flight</i>
+                    <span>Passagens aéreas</span>
+                </div>
+                <div class="initial-suggestion" onclick="selectSuggestion('Hotéis')">
+                    <i class="material-icons">hotel</i>
+                    <span>Hotéis</span>
+                </div>
+                <div class="initial-suggestion" onclick="selectSuggestion('Pacotes de viagem')">
+                    <i class="material-icons">card_travel</i>
+                    <span>Pacotes de viagem</span>
+                </div>
+            </div>
+            
+            <!-- Abas (inicialmente ocultas) -->
+            <div id="tabs-container" style="display:none;">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="changeTab('passagens')">Passagens</button>
+                    <button class="tab-button" onclick="changeTab('hoteis')">Hotéis</button>
+                    <button class="tab-button" onclick="changeTab('carros')">Carros</button>
+                </div>
+                
+                <!-- Conteúdo da aba Passagens -->
+                <div id="passagens-tab">
+                    <div class="trip-type">
+                        <button class="trip-option active">Ida e volta</button>
+                        <button class="trip-option">Só ida</button>
+                        <button class="trip-option">Vários destinos</button>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Origem</label>
+                        <input type="text" class="input-field" placeholder="De onde você vai sair?" id="origemInput" onkeyup="showSuggestions(this, 'origemSuggestions')">
+                        <div class="suggestions" id="origemSuggestions"></div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Destino</label>
+                        <input type="text" class="input-field" placeholder="Para onde você quer ir?" id="destinoInput" onkeyup="showSuggestions(this, 'destinoSuggestions')">
+                        <div class="suggestions" id="destinoSuggestions"></div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Ida</label>
+                        <input type="date" class="input-field">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Volta</label>
+                        <input type="date" class="input-field">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Viajantes e Classe</label>
+                        <input type="text" class="input-field" placeholder="1 Viajante - Todas as classes" readonly>
+                    </div>
+                    
+                    <button class="search-btn">Buscar</button>
+                </div>
+                
+                <!-- Conteúdo da aba Hotéis (inicialmente oculto) -->
+                <div id="hoteis-tab" style="display:none;">
+                    <!-- Conteúdo para hotéis -->
+                </div>
+                
+                <!-- Conteúdo da aba Carros (inicialmente oculto) -->
+                <div id="carros-tab" style="display:none;">
+                    <!-- Conteúdo para carros -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lista de cidades para sugestões
+        const cidades = [
+            "São Paulo (GRU)", "Rio de Janeiro (GIG)", "Salvador (SSA)",
+            "Fortaleza (FOR)", "Belo Horizonte (CNF)", "Recife (REC)",
+            "Porto Alegre (POA)", "Florianópolis (FLN)", "Curitiba (CWB)",
+            "Brasília (BSB)", "Natal (NAT)", "Maceió (MCZ)", "Manaus (MAO)"
+        ];
+        
+        // Manipula a digitação no campo principal
+        function handleMainSearch() {
+            const input = document.getElementById('mainSearch');
+            const panel = document.getElementById('expandedPanel');
+            const initialSuggestions = document.getElementById('initialSuggestions');
+            const tabsContainer = document.getElementById('tabs-container');
+            
+            panel.style.display = 'block';
+            
+            if (input.value.length > 0) {
+                initialSuggestions.style.display = 'none';
+                tabsContainer.style.display = 'block';
+                
+                // Foca no campo de destino se for uma busca por passagens
+                if (input.value.toLowerCase().includes('passagem') || 
+                    input.value.toLowerCase().includes('voar') ||
+                    input.value.toLowerCase().includes('avião')) {
+                    document.getElementById('destinoInput').focus();
+                }
+            } else {
+                initialSuggestions.style.display = 'block';
+                tabsContainer.style.display = 'none';
+            }
+        }
+        
+        // Seleciona uma sugestão inicial
+        function selectSuggestion(text) {
+            document.getElementById('mainSearch').value = text;
+            handleMainSearch();
+        }
+        
+        // Muda entre as abas
+        function changeTab(tabName) {
+            // Atualiza botões das abas
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(tabName)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Esconde todos os conteúdos das abas
+            document.getElementById('passagens-tab').style.display = 'none';
+            document.getElementById('hoteis-tab').style.display = 'none';
+            document.getElementById('carros-tab').style.display = 'none';
+            
+            // Mostra apenas a aba selecionada
+            document.getElementById(tabName + '-tab').style.display = 'block';
+        }
+        
+        // Ativa/desativa opções de tipo de viagem
+        document.querySelectorAll('.trip-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.trip-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // Mostra sugestões de cidades
+        function showSuggestions(inputElement, suggestionsId) {
+            const input = inputElement.value.toLowerCase();
+            const suggestionsBox = document.getElementById(suggestionsId);
+            
+            suggestionsBox.innerHTML = '';
+            suggestionsBox.style.display = 'none';
+            
+            if (input.length < 3) {
+                if (input.length > 0) {
+                    suggestionsBox.innerHTML = '<div class="suggestion-item">Digite pelo menos 3 letras</div>';
+                    suggestionsBox.style.display = 'block';
+                }
+                return;
+            }
+            
+            const matches = cidades.filter(cidade => 
+                cidade.toLowerCase().includes(input)
+            );
+            
+            if (matches.length > 0) {
+                matches.forEach(cidade => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    item.textContent = cidade;
+                    item.onclick = () => {
+                        inputElement.value = cidade;
+                        suggestionsBox.style.display = 'none';
+                    };
+                    suggestionsBox.appendChild(item);
+                });
+                suggestionsBox.style.display = 'block';
+            } else {
+                suggestionsBox.innerHTML = '<div class="suggestion-item">Nenhum resultado encontrado</div>';
+                suggestionsBox.style.display = 'block';
+            }
+        }
+        
+        // Fecha sugestões ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('input-field') && !e.target.classList.contains('search-input')) {
+                document.querySelectorAll('.suggestions').forEach(box => {
+                    box.style.display = 'none';
+                });
+            }
+            
+            // Fecha o painel se clicar fora
+            if (!e.target.closest('.search-container')) {
+                const input = document.getElementById('mainSearch');
+                if (input.value.length === 0) {
+                    document.getElementById('expandedPanel').style.display = 'none';
+                }
+            }
+        });
+        
+        // Foca no campo principal ao carregar a página
+        document.getElementById('mainSearch').focus();
+    </script>
+</body>
+</html>

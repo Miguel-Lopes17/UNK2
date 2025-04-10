@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Viagens e Turismo</title>
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/mediaquery.css">
-    
+
     <!-- Bibliotecas externas -->
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -21,26 +22,26 @@
 
         <header class="header">
             <a data-aos="fade-down" data-aos-duration="1000" href="#" class="logo">Logo</a>
-            
+
             <nav class="navbar">
                 <ul class="nav-links" data-aos="fade-down" data-aos-duration="1000">
                     <li><a href="#" title="Explorar">Link1</a></li>
                     <li><a href="#" title="Favoritos">Link2</a></li>
                     <li><a href="#" title="Login">Link3</a></li>
-                </ul>  
+                </ul>
             </nav>
         </header>
 
         <main class="main-content">
             <h1 class="slogan">A experiência que cabe no seu bolso.</h1>
 
-            <div class="search-container">
+            <div class="search-container" id="back">
                 <div class="compact-search">
                     <span class="material-icons search-icon">search</span>
-                    <input type="text" class="search-input" placeholder="Para onde você quer viajar?" 
-                           id="mainSearch" onkeyup="handleMainSearch()" onclick="expandSearchPanel()">
+                    <input type="text" class="search-input" placeholder="Para onde você quer viajar?" id="mainSearch"
+                        onkeyup="handleMainSearch()" onclick="expandSearchPanel()">
                 </div>
-                
+
                 <div class="expanded-panel" id="expandedPanel">
                     <div class="initial-suggestions" id="initialSuggestions">
                         <div class="initial-suggestion" onclick="selectSuggestion('Passagens aéreas')">
@@ -56,53 +57,55 @@
                             <span>Pacotes de viagem</span>
                         </div>
                     </div>
-                    
+
                     <div id="tabs-container">
+                        <a href="#back">back</a>
                         <div class="tab-buttons">
                             <button class="tab-button active" onclick="changeTab('passagens')">Passagens</button>
                             <button class="tab-button" onclick="changeTab('hoteis')">Hotéis</button>
                             <button class="tab-button" onclick="changeTab('carros')">Carros</button>
                         </div>
-                        
+
                         <div id="passagens-tab">
                             <div class="trip-type">
                                 <button class="trip-option active">Ida e volta</button>
                                 <button class="trip-option">Só ida</button>
                                 <button class="trip-option">Vários destinos</button>
                             </div>
-                            
+
                             <div class="input-group">
                                 <label class="input-label">Origem</label>
-                                <input type="text" class="input-field" placeholder="De onde você vai sair?" 
-                                       id="origemInput" onkeyup="showSuggestions(this, 'origemSuggestions')">
+                                <input type="text" class="input-field" placeholder="De onde você vai sair?"
+                                    id="origemInput" onkeyup="showSuggestions(this, 'origemSuggestions')">
                                 <div class="suggestions" id="origemSuggestions"></div>
                             </div>
-                            
+
                             <div class="input-group">
                                 <label class="input-label">Destino</label>
-                                <input type="text" class="input-field" placeholder="Para onde você quer ir?" 
-                                       id="destinoInput" onkeyup="showSuggestions(this, 'destinoSuggestions')">
+                                <input type="text" class="input-field" placeholder="Para onde você quer ir?"
+                                    id="destinoInput" onkeyup="showSuggestions(this, 'destinoSuggestions')">
                                 <div class="suggestions" id="destinoSuggestions"></div>
                             </div>
-                            
+
                             <div class="input-group">
                                 <label class="input-label">Ida</label>
                                 <input type="date" class="input-field">
                             </div>
-                            
+
                             <div class="input-group">
                                 <label class="input-label">Volta</label>
                                 <input type="date" class="input-field">
                             </div>
-                            
+
                             <div class="input-group">
                                 <label class="input-label">Viajantes e Classe</label>
-                                <input type="text" class="input-field" placeholder="1 Viajante - Todas as classes" readonly>
+                                <input type="text" class="input-field" placeholder="1 Viajante - Todas as classes"
+                                    readonly>
                             </div>
-                            
+
                             <button class="search-btn">Buscar</button>
                         </div>
-                        
+
                         <div id="hoteis-tab"></div>
                         <div id="carros-tab"></div>
                     </div>
@@ -111,12 +114,45 @@
         </main>
     </div>
 
-    <section class="service-section">
-        
-    </section>
+    <article class="service-article">
+        <section class="service">
+            <div class="icon">
+                <a href="#"> <i class="fa-solid fa-plane-departure"></i>Passagens</a>
+            </div>
+            <div class="icon">
+                <a href="#"><i class="bi bi-building"></i>Hotéis</a>
+            </div>
+            <div class="icon">
+                <a href="#"><i class="bi bi-suitcase-lg"></i>Pacotes</a>
+            </div>
+            <div class="icon">
+                <a href="#"><img src="img/boat.png" alt="" width="25">Cruzeiro</a>
+            </div>
+            <div class="icon">
+                <a href="#">Ofertas</a>
+            </div>
+            <div class="icon">
+                <a href="#">Aluguéis</a>
+            </div>
+            <div class="icon">
+                <a href="#">Carros</a>
+            </div>
+            <div class="icon">
+                <a href="#">Ônibus</a>
+            </div>
+            <div class="icon">
+                <a href="#"><img id="promo" src="img/discount.png" alt="" width="25">Promoções</a>
+            </div>
+            <div class="icon">
+                <a href="#">Passeios</a>
+            </div>
+        </section>
+    </article>
+
 
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>AOS.init();</script>
     <script src="./js/script.js"></script>
 </body>
+
 </html>
